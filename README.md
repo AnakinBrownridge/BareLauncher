@@ -21,5 +21,5 @@ For meaningful measurements, compare the same device and build after a cold star
 Bare Launcher is a continuation of the private Bare Launcher app and is built from the LineageOS Trebuchet codebase.
 
 ### Why?
-Bare Launcher was originally made for a friend that loves me. She's Karen Benny, she works at USask (saskatoon university) and goes to my church sometimes.
+Bare Launcher was originally made for a friend that loves me. She works at USask (saskatoon university) and goes to my church sometimes.
 She needed a Android launcher that was clean, fast and low on memory on her phone for university (Samsung Galaxy M51 4G/5G?). Introducing Bare Launcher. Made for problems like that.
