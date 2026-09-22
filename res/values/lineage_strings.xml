@@ -15,11 +15,9 @@
 -->
 <resources>
     <!-- Application name -->
-    <string name="lineageos_app_name" translatable="false">Trebuchet</string>
+    <string name="lineageos_app_name" translatable="false">Bare Launcher</string>
 
     <!-- Settings -->
-
-    <!-- Edit workspace -->
     <string name="settings_lock_layout_title">Lock layout</string>
     <string name="settings_lock_layout_summary_on">Icons and widgets can\'t be added, removed and moved on the homescreen</string>
     <string name="settings_lock_layout_summary_off">Icons and widgets can be added, removed and moved on the homescreen</string>
@@ -27,27 +25,16 @@
 
     <!-- Settings title to show Google Now at -1 screen on launcher. [CHAR LIMIT=50] -->
     <string name="title_show_google_app">Show Google app</string>
-    <!-- Settings message explaining when the -1 screen is available on an LTR device. [CHAR LIMIT=100] -->
     <string name="msg_minus_one_on_left">When you swipe right from main home screen</string>
-    <!-- Settings message explaining when the -1 screen is available on an RTL device. [CHAR LIMIT=100] -->
     <string name="msg_minus_one_on_right">When you swipe left from main home screen</string>
 
-    <!-- Folder titles -->
     <string name="google_folder_title" translatable="false">Google</string>
-
-    <!-- All apps themed icons -->
     <string name="pref_themed_icons_title">Use themed icons in drawer</string>
     <string name="pref_themed_icons_summary">Follow themed icons used on home screen</string>
-
-    <!-- Hide labels -->
     <string name="desktop_show_labels">Show icon labels on desktop</string>
     <string name="drawer_show_labels">Show icon labels in drawer</string>
-
-    <!-- Open keyboard -->
     <string name="drawer_open_keyboard_title">Swipe to start search</string>
     <string name="drawer_open_keyboard_summary">Open keyboard whenever app drawer becomes visible</string>
-
-    <!-- Trust apps -->
     <string name="trust_apps_manager_name">Hidden &amp; Protected apps</string>
     <string name="trust_apps_auth_manager">Unlock to manage the hidden and protected apps</string>
     <string name="trust_apps_auth_open_app">Authenticate to open %1$s</string>
@@ -56,8 +43,6 @@
     <string name="trust_apps_help">Help</string>
     <string name="trust_apps_info_hidden">Hidden apps and their widgets are hidden from the drawer</string>
     <string name="trust_apps_info_protected">Protected apps require authentication to be opened from the launcher</string>
-
-    <!-- App suggestions -->
     <string name="pref_suggestions_title">Suggestions</string>
     <string name="pref_suggestions_summary">For app drawer &amp; home screen suggestions</string>
 </resources>
