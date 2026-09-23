@@ -24,12 +24,11 @@ Describe the result you actually got.
 
 ## Environment
 - App version: 
-- OS: 
 - Device / architecture: 
 - Build / commit: 
 
 ## Additional context
-Add screenshots, logs, or other details that might help explain the issue.
+Add screenshots, logs (idk if your a dev and you know what that is), or other details that might help explain the issue.
 
 ## Checklist
 - [ ] I have checked whether this is already reported
