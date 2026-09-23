@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bare Launcher</string>
+    <string name="bare_build_number">26.10.dayly.260923</string>
+    <string name="bare_settings_title">Bare Launcher settings</string>
+    <string name="system_info_title">System information</string>
+    <string name="about_bare_launcher">About Bare Launcher</string>
+    <string name="bare_launcher_build_format">Bare Launcher build %1$s</string>
+    <string name="bare_contributors">Trebuchet contributors
+AnakinBrownridge on GitHub</string>
+    <string name="bare_feature_oneui_grid">One UI-style grid</string>
+    <string name="bare_feature_wallpapers">Wallpaper container</string>
+    <string name="bare_feature_smart_widgets">Smart widgets</string>
+    <string name="bare_feature_app_shortcuts">App shortcuts</string>
+    <string name="bare_about_summary">Bare Launcher build %1$s\n\nBased on Trebuchet.\nContributors: Trebuchet contributors, AnakinBrownridge on GitHub.</string>
+    <string name="long_press_options">Options</string>
+    <string name="long_press_wallpapers">Wallpapers</string>
+</resources>
