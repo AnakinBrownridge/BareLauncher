@@ -21,11 +21,11 @@
     <skip />
 
     <!-- Application name -->
-    <string name="app_name">Launcher3</string>
+    <string name="app_name">Bare Launcher</string>
     <!-- Work folder name -->
     <string name="work_folder_name">Work</string>
     <!-- Displayed when user selects a shortcut for an app that was uninstalled [CHAR_LIMIT=none]-->
-    <string name="activity_not_found">App isn\'t installed.</string>
+    <string name="activity_not_found">App isn\'t installed. Search for %1$s on an app store and reinstall it</string>
     <!-- Displayed when user selects a shortcut for an app that is current not available [CHAR_LIMIT=none]-->
     <string name="activity_not_available">App isn\'t available</string>
     <!-- SafeMode shortcut error string -->
@@ -381,7 +381,7 @@
      in order to re-enable the disabled shortcuts -->
     <string name="dialog_update_title">App update required</string>
     <!-- Message shown on the alert dialog prompting the user to update the application -->
-    <string name="dialog_update_message">The app for this icon isn\'t updated. You can update manually to re-enable this shortcut, or remove the icon.</string>
+    <string name="dialog_update_message">This icon had not been updated. This usually happens very rarly, but you can remove this icon and readd it.</string>
     <!-- Message for the update button in the alert dialog, will bring the user to market -->
     <string name="dialog_update">Update</string>
     <!-- Message for the remove button in the alert dialog -->
@@ -496,7 +496,7 @@
     <!--- body shown when user opens work apps tab while work apps are paused and calls and texts are unavailable-->
     <string name="work_apps_paused_telephony_unavailable_body">You won’t receive phone calls, text messages, or notifications from your work apps</string>
     <!-- string shown in educational banner about work profile -->
-    <string name="work_apps_paused_edu_banner">Work apps are badged and visible to your IT admin</string>
+    <string name="work_apps_paused_edu_banner">Work apps are badged and visible to your IT admin. Be careful.</string>
     <!-- button string shown to dismiss work tab education -->
     <string name="work_apps_paused_edu_accept">Got it</string>
 
@@ -523,9 +523,9 @@
     <!-- Description for Private Space Settings button -->
     <string name="ps_container_settings">Private Space Settings</string>
     <!-- Description for Private Space Unlock button -->
-    <string name="ps_container_unlock_button_content_description">Private, unlocked.</string>
+    <string name="ps_container_unlock_button_content_description">Private unlocked.</string>
     <!-- Description for Private Space Lock button -->
-    <string name="ps_container_lock_button_content_description">Private, locked.</string>
+    <string name="ps_container_lock_button_content_description">Private locked.</string>
     <string name="ps_container_lock_title">Lock</string>
     <!-- Description for Private Space Transition button -->
     <string name="ps_container_transition">Private Space Transitioning</string>
