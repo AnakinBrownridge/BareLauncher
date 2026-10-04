@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <size android:width="1080dp" android:height="1080dp" />
-    <solid android:color="#6750A4" />
-</shape>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="1080dp"
+    android:height="1080dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="1080">
+    <!-- Solid background (Material You purple) -->
+    <path
+        android:fillColor="#6750A4"
+        android:pathData="M0,0h1080v1080h-1080z" />
+</vector>
