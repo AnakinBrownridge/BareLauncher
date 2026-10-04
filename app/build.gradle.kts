@@ -21,7 +21,6 @@ android {
        buildFeatures {
         buildConfig = true
     }
-}
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
