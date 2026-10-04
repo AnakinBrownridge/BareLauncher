@@ -18,6 +18,11 @@ android {
         buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
     }
 
+       buildFeatures {
+        buildConfig = true
+    }
+}
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
