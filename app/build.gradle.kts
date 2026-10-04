@@ -11,8 +11,8 @@ android {
         applicationId = "com.anakinbrownridge.barelauncher"
         minSdk = 29
         targetSdk = 31
-        versionCode = Cronkite
-        versionName = "26.10"
+        versionCode = CronkiteAlpha1
+        versionName = "26.10-alpha1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
