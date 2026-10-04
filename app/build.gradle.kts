@@ -5,27 +5,22 @@ plugins {
 
 android {
     namespace = "com.anakinbrownridge.barelauncher"
-    compileSdk = 31
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.anakinbrownridge.barelauncher"
         minSdk = 29
-        targetSdk = 31
+        targetSdk = 34
         versionCode = 4
         versionName = "26.10-alpha1"
-
-        // Create a hidden variable your code can read, but the OS cannot see
-        buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
-    }
-
-       buildFeatures {
-        buildConfig = true
-    }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Create a hidden variable your code can read, but the OS cannot see
+        buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
     }
 
     buildTypes {
@@ -48,6 +43,8 @@ android {
     }
 
     buildFeatures {
+        // enable BuildConfig generation and Compose
+        buildConfig = true
         compose = true
     }
 
