@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.barelauncher"
-    compileSdk = 34
+    namespace = "com.anakinbrownridge.barelauncher"
+    compileSdk = 31
 
     defaultConfig {
-        applicationId = "com.barelauncher"
+        applicationId = "com.anakinbrownridge.barelauncher"
         minSdk = 29
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 31
+        versionCode = Cronkite
+        versionName = "26.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
