@@ -1,4 +1,4 @@
-package com.barelauncher
+package com.anakinbrownridge.barelauncher
 
 import android.content.Context
 import androidx.compose.foundation.background
