@@ -4,20 +4,16 @@ plugins {
 }
 
 android {
-    // 🌟 ADD THIS EXACT LINE AT THE TOP OF THE ANDROID BLOCK:
     namespace = "com.anakinbrownridge.barelauncher"
-
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.anakinbrownridge.barelauncher"
         minSdk = 29     
-        targetSdk = 31  // Native target for her phone's Android 12 environment
+        targetSdk = 31  
 
         versionCode = 4
         versionName = "26.10-alpha1"
-
-        // Saskatoon neighborhood easter egg safely tucked away!
         buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -25,6 +21,27 @@ android {
             useSupportLibrary = true
         }
     }
+
+    // 🌟 ADD THIS EXACT BLOCK TO FORCE BOTH JAVAC AND KOTLIN TO USE JAVA 17:
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14" 
+    }
+}
+
 
     buildFeatures {
         buildConfig = true
