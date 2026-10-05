@@ -1,4 +1,4 @@
-package com.barelauncher
+package com.anakinbrownridge.barelauncher
 
 import android.app.WallpaperManager
 import android.content.Context
