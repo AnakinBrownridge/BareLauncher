@@ -53,9 +53,3 @@ val md_theme_dark_onSurfaceVariant = Color(0xFFCAC4D0)
 val md_theme_dark_outline = Color(0xFF938F99)
 val md_theme_dark_inverseOnSurface = Color(0xFF1D1B20)
 val md_theme_dark_inverseSurface = Color(0xFFE6E1E5)
-
-style = HazeStyle(
-    tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.08f),
-    blurRadius = 6.dp,
-    noiseFactor = 0.04f
-)
