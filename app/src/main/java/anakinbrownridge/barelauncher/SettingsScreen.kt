@@ -120,6 +120,52 @@ private fun TopAppBarWithSave(title: String, onBack: (() -> Unit)?, onSave: () -
 }
 
 @Composable
+private fun SettingsCard(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            content()
+        }
+    }
+}
+
+@Composable
+private fun ToggleRow(label: String, isChecked: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium)
+        Checkbox(checked = isChecked, onCheckedChange = {})
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String? = null) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(label, style = MaterialTheme.typography.bodyMedium)
+        if (value != null) {
+            Text(value, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
 private fun AdvancedAppearanceSettings() {
     SettingsCard(title = stringResource(R.string.advanced_appearance)) {
         ToggleRow("Use blur and shadows", true)
