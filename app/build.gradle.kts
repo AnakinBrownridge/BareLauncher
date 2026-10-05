@@ -46,7 +46,7 @@ android {
 dependencies {
     // Optimized, lightweight library layout for her 2020 hardware
     implementation("com.google.android.material:material:1.12.0")
-    implementation(androidx.compose.material:material-icons-extended:1.5.0)
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("dev.chrisbanes.haze:haze:0.6.0")
     
     implementation("androidx.core:core-ktx:1.12.0")
