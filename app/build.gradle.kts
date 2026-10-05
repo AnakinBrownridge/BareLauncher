@@ -13,7 +13,7 @@ android {
         targetSdk = 31  // Native target for her phone's Android 12 environment
 
         versionCode = 4
-        versionName = "26.10-alpha1"
+        versionName = "26.10-alpha1-261005"
 
         // Your secret neighborhood easter egg is safe here!
         buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
