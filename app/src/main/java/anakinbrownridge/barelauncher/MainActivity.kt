@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,7 +47,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,11 +54,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anakinbrownridge.barelauncher.ui.theme.BareLauncherTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -81,7 +77,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BareLauncherHomeScreen() {
     val context = LocalContext.current
-    // Load pinned apps from SharedPreferences (comma-separated package names)
     val prefs = context.getSharedPreferences("bare_prefs", Context.MODE_PRIVATE)
     var pinnedPackages by remember { mutableStateOf(listOf<String>()) }
 
@@ -100,10 +95,8 @@ fun BareLauncherHomeScreen() {
             .padding(18.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Glance Now: show weekday and date
         GlanceNow()
 
-        // Middle: widgets/cards (placeholder)
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -111,32 +104,29 @@ fun BareLauncherHomeScreen() {
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Welcome to BareLauncher", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.welcome_title), style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Your lightweight, Material You launcher.")
+                    Text(stringResource(R.string.welcome_subtitle))
                 }
             }
 
-            // Pinned apps grid (shows app icons and names); uses user prefs
             PinnedAppsGrid(pinnedPackages = pinnedPackages, onLaunch = { pkg ->
                 launchApp(context, pkg)
             })
         }
 
-        // Bottom row: wallpaper and settings
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(onClick = {
-                // open wallpaper picker activity - keep as placeholder
                 val intent = Intent(context, HomeSettingsActivity::class.java)
                 context.startActivity(intent)
             }) {
                 Icon(imageVector = Icons.Filled.Wallpaper, contentDescription = null)
                 Spacer(modifier = Modifier.size(8.dp))
-                Text("Settings")
+                Text(stringResource(R.string.settings))
             }
 
             FloatingActionButton(onClick = { /* open app drawer - placeholder */ }) {
@@ -153,7 +143,7 @@ private fun GlanceNow() {
     val dateString = today.format(DateTimeFormatter.ofPattern("d MMM yyyy", Locale.getDefault()))
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Glance Now", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.glance_now), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(6.dp))
         Text(text = "$weekday, $dateString", style = MaterialTheme.typography.bodyLarge, fontSize = 18.sp)
     }
@@ -165,14 +155,17 @@ private fun PinnedAppsGrid(pinnedPackages: List<String>, onLaunch: (String) -> U
     val pm = context.packageManager
 
     if (pinnedPackages.isEmpty()) {
-        Text("No pinned apps. Configure pinned apps in Settings.", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.no_pinned_apps), style = MaterialTheme.typography.bodyMedium)
         return
     }
 
-    // show a horizontal grid of pinned apps
     val gridState = rememberLazyGridState()
 
-    LazyHorizontalGrid(rows = GridCells.Fixed(1), state = gridState, modifier = Modifier.height(92.dp)) {
+    androidx.compose.foundation.lazy.grid.LazyHorizontalGrid(
+        rows = GridCells.Fixed(1),
+        state = gridState,
+        modifier = Modifier.height(92.dp)
+    ) {
         items(pinnedPackages) { pkg ->
             val appInfo = try { pm.getApplicationInfo(pkg, 0) } catch (e: Exception) { null }
             val label = appInfo?.let { pm.getApplicationLabel(it).toString() } ?: pkg.substringAfterLast('.')

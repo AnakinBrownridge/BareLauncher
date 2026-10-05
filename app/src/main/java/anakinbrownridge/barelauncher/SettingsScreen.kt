@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,24 +28,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Settings screen with an app picker to choose pinned apps. Stores selection in SharedPreferences
- * under file "bare_prefs" key "pinned_apps" as a comma-separated list of package names.
- */
-
-enum class SettingsPage(val label: String) {
-    AdvancedAppearance("Advanced Appearance"),
-    Appearance("Appearance"),
-    About("About"),
-    Licenses("Licenses"),
-    PhoneInfo("Phone information")
+enum class SettingsPage(@StringRes val labelRes: Int) {
+    AdvancedAppearance(R.string.advanced_appearance),
+    Appearance(R.string.appearance),
+    About(R.string.about),
+    Licenses(R.string.licenses),
+    PhoneInfo(R.string.phone_info)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +70,7 @@ fun SettingsScreen(
                 )
         ) {
             TopAppBarWithSave(
-                title = "Home settings",
+                title = stringResource(R.string.home_settings_title),
                 onBack = onBack,
                 onSave = {
                     // Save handled by inner pages where relevant (picker saves immediately), keep for future use
@@ -85,7 +82,7 @@ fun SettingsScreen(
                     Tab(
                         selected = selectedIndex == index,
                         onClick = { selectedIndex = index },
-                        text = { Text(page.label) }
+                        text = { Text(stringResource(page.labelRes)) }
                     )
                 }
             }
@@ -110,13 +107,13 @@ private fun TopAppBarWithSave(title: String, onBack: (() -> Unit)?, onSave: () -
         navigationIcon = {
             if (onBack != null) {
                 IconButton(onClick = onBack) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                 }
             }
         },
         actions = {
             IconButton(onClick = onSave) {
-                Icon(imageVector = Icons.Filled.Save, contentDescription = "Save")
+                Icon(imageVector = Icons.Filled.Save, contentDescription = stringResource(R.string.save))
             }
         }
     )
@@ -124,7 +121,7 @@ private fun TopAppBarWithSave(title: String, onBack: (() -> Unit)?, onSave: () -
 
 @Composable
 private fun AdvancedAppearanceSettings() {
-    SettingsCard(title = "Advanced appearance") {
+    SettingsCard(title = stringResource(R.string.advanced_appearance)) {
         ToggleRow("Use blur and shadows", true)
         ToggleRow("Adaptive colors", true)
         ToggleRow("Legacy app icons fallback", true)
@@ -133,21 +130,19 @@ private fun AdvancedAppearanceSettings() {
 
 @Composable
 private fun AppearanceSettings() {
-    SettingsCard(title = "Appearance") {
+    SettingsCard(title = stringResource(R.string.appearance)) {
         ToggleRow("Dark mode", true)
         ToggleRow("Show widgets", true)
         ToggleRow("Floating drawer", true)
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        // App picker embedded under Appearance for convenience
         AppPickerSection()
     }
 }
 
 @Composable
 private fun AboutSettings() {
-    SettingsCard(title = "About") {
+    SettingsCard(title = stringResource(R.string.about)) {
         InfoRow("BareLauncher")
         InfoRow("Version", "1.0.0")
         InfoRow("Theme", "Low-resource Material You")
@@ -157,7 +152,7 @@ private fun AboutSettings() {
 
 @Composable
 private fun LicensesSettings() {
-    SettingsCard(title = "Licenses") {
+    SettingsCard(title = stringResource(R.string.licenses)) {
         InfoRow("Material3", "Apache 2.0")
         InfoRow("Jetpack Compose", "Apache 2.0")
         InfoRow("Haze", "Apache 2.0")
@@ -166,7 +161,6 @@ private fun LicensesSettings() {
 
 @Composable
 private fun PhoneInfoSettings() {
-    // preserved from previous implementation (reads sysver if available)
     val context = LocalContext.current
     var sysverText by remember { mutableStateOf<String?>(null) }
 
@@ -174,17 +168,15 @@ private fun PhoneInfoSettings() {
         sysverText = readSysverFromResources(context)
     }
 
-    SettingsCard(title = "Phone information") {
+    SettingsCard(title = stringResource(R.string.phone_info)) {
         if (sysverText.isNullOrBlank()) {
-            InfoRow("System info", "Unavailable")
+            InfoRow("System info", stringResource(R.string.system_info_unavailable))
         } else {
             val lines = sysverText!!.trim().lines()
             lines.forEach { line -> InfoRow(line) }
         }
     }
 }
-
-// ---------------- App picker implementation ----------------
 
 @Composable
 private fun AppPickerSection() {
@@ -196,7 +188,6 @@ private fun AppPickerSection() {
     var selected by remember { mutableStateOf(setOf<String>()) }
     var loading by remember { mutableStateOf(true) }
 
-    // load current selection from prefs
     LaunchedEffect(Unit) {
         val existing = prefs.getString("pinned_apps", "")
             ?.split(',')
@@ -205,20 +196,19 @@ private fun AppPickerSection() {
             ?: emptyList()
         selected = existing.toSet()
 
-        // load installed launcher apps off the UI thread
         installedApps = loadLaunchableApps(pm)
         loading = false
     }
 
-    SettingsCard(title = "Manage pinned apps") {
+    SettingsCard(title = stringResource(R.string.manage_pinned_apps)) {
         if (loading) {
-            Text("Loading apps...", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.loading_apps), style = MaterialTheme.typography.bodyLarge)
         } else {
             Column {
-                Text("Tap to toggle pin. Press Save when done.", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.tap_toggle_pin), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                LazyColumn { // list of apps
+                LazyColumn {
                     items(installedApps) { app ->
                         val isSelected = selected.contains(app.packageName)
                         Row(
@@ -237,7 +227,6 @@ private fun AppPickerSection() {
                                         modifier = Modifier.size(40.dp)
                                     )
                                 } else {
-                                    // placeholder
                                     Surface(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
                                         Text(" ", modifier = Modifier.size(40.dp))
                                     }
@@ -257,11 +246,10 @@ private fun AppPickerSection() {
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                     Button(onClick = {
-                        // save selection
                         val csv = selected.joinToString(",")
                         prefs.edit().putString("pinned_apps", csv).apply()
                     }) {
-                        Text("Save pinned apps")
+                        Text(stringResource(R.string.save_pinned_apps))
                     }
                 }
             }
@@ -305,8 +293,6 @@ private fun drawableToBitmap(drawable: Drawable): Bitmap? {
         return null
     }
 }
-
-// ---------------- existing helper functions preserved ----------------
 
 private suspend fun readSysverFromResources(context: Context): String? {
     return withContext(Dispatchers.IO) {
