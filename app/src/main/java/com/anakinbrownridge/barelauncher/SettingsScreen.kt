@@ -102,6 +102,7 @@ fun SettingsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopAppBarWithSave(title: String, onBack: (() -> Unit)?, onSave: () -> Unit) {
     CenterAlignedTopAppBar(
