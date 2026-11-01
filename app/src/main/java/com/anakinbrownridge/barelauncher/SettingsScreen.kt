@@ -1,42 +1,45 @@
 package com.anakinbrownridge.barelauncher
 
 import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 enum class SettingsPage(@StringRes val labelRes: Int) {
     AdvancedAppearance(R.string.advanced_appearance),
@@ -46,13 +49,27 @@ enum class SettingsPage(@StringRes val labelRes: Int) {
     PhoneInfo(R.string.phone_info)
 }
 
+private val accentPresets = listOf(
+    0xFF006061, // teal (default palette)
+    0xFF1E88E5, // blue
+    0xFF8E24AA, // purple
+    0xFFD81B60, // pink
+    0xFFE53935, // red
+    0xFFFB8C00, // orange
+    0xFF43A047, // green
+    0xFF6D4C41  // brown
+).map { Color(it) }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    settings: LauncherSettings,
+    onSettingsChange: (LauncherSettings) -> Unit,
     onBack: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val pages = SettingsPage.entries
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -75,11 +92,11 @@ fun SettingsScreen(
                 title = stringResource(R.string.home_settings_title),
                 onBack = onBack,
                 onSave = {
-                    // Save handled by inner pages where relevant (picker saves immediately), keep for future use
+                    Toast.makeText(context, R.string.settings_autosaved, Toast.LENGTH_SHORT).show()
                 }
             )
 
-            TabRow(selectedTabIndex = selectedIndex) {
+            ScrollableTabRow(selectedTabIndex = selectedIndex, edgePadding = 8.dp) {
                 pages.forEachIndexed { index, page ->
                     Tab(
                         selected = selectedIndex == index,
@@ -89,14 +106,20 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(modifier = Modifier.height(18.dp))
 
-            when (pages[selectedIndex]) {
-                SettingsPage.AdvancedAppearance -> AdvancedAppearanceSettings()
-                SettingsPage.Appearance -> AppearanceSettings()
-                SettingsPage.About -> AboutSettings()
-                SettingsPage.Licenses -> LicensesSettings()
-                SettingsPage.PhoneInfo -> PhoneInfoSettings()
+                when (pages[selectedIndex]) {
+                    SettingsPage.AdvancedAppearance -> AdvancedAppearanceSettings(settings, onSettingsChange)
+                    SettingsPage.Appearance -> AppearanceSettings(settings, onSettingsChange)
+                    SettingsPage.About -> AboutSettings()
+                    SettingsPage.Licenses -> LicensesSettings()
+                    SettingsPage.PhoneInfo -> PhoneInfoSettings()
+                }
             }
         }
     }
@@ -145,16 +168,27 @@ private fun SettingsCard(
 }
 
 @Composable
-private fun ToggleRow(label: String, isChecked: Boolean) {
+private fun ToggleRow(
+    label: String,
+    description: String? = null,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onCheckedChange(!isChecked) }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium)
-        Checkbox(checked = isChecked, onCheckedChange = {})
+        Column(modifier = Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyMedium)
+            if (description != null) {
+                Text(description, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        Checkbox(checked = isChecked, onCheckedChange = onCheckedChange)
     }
 }
 
@@ -169,23 +203,91 @@ private fun InfoRow(label: String, value: String? = null) {
 }
 
 @Composable
-private fun AdvancedAppearanceSettings() {
+private fun AdvancedAppearanceSettings(
+    settings: LauncherSettings,
+    onChange: (LauncherSettings) -> Unit
+) {
     SettingsCard(title = stringResource(R.string.advanced_appearance)) {
-        ToggleRow("Use blur and shadows", true)
-        ToggleRow("Adaptive colors", true)
-        ToggleRow("Legacy app icons fallback", true)
+        ToggleRow(
+            label = "Use blur and shadows",
+            description = "Frosted-glass app drawer",
+            isChecked = settings.blur
+        ) { onChange(settings.copy(blur = it)) }
+
+        ToggleRow(
+            label = "Adaptive colors",
+            description = "Match system colors (Android 12+)",
+            isChecked = settings.adaptiveColors
+        ) { onChange(settings.copy(adaptiveColors = it)) }
+
+        ToggleRow(
+            label = "Legacy app icons fallback",
+            description = "Show app icons as circles",
+            isChecked = settings.legacyIcons
+        ) { onChange(settings.copy(legacyIcons = it)) }
     }
 }
 
 @Composable
-private fun AppearanceSettings() {
+private fun AppearanceSettings(
+    settings: LauncherSettings,
+    onChange: (LauncherSettings) -> Unit
+) {
     SettingsCard(title = stringResource(R.string.appearance)) {
-        ToggleRow("Dark mode", true)
-        ToggleRow("Show widgets", true)
-        ToggleRow("Floating drawer", true)
+        ToggleRow(label = "Dark mode", isChecked = settings.darkMode) {
+            onChange(settings.copy(darkMode = it))
+        }
+        ToggleRow(label = "Show widgets", description = "Date and welcome card on the home screen", isChecked = settings.showWidgets) {
+            onChange(settings.copy(showWidgets = it))
+        }
+        ToggleRow(label = "Floating drawer", description = "Off = full-screen app drawer", isChecked = settings.floatingDrawer) {
+            onChange(settings.copy(floatingDrawer = it))
+        }
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
-        AppPickerSection()
+    SettingsCard(title = stringResource(R.string.accent_colour)) {
+        AccentPicker(selected = settings.accent) { onChange(settings.copy(accent = it)) }
+    }
+
+    AppPickerSection(circleIcons = settings.legacyIcons)
+}
+
+@Composable
+private fun AccentPicker(selected: Int, onSelect: (Int) -> Unit) {
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // "Auto" = no custom accent
+        AccentSwatch(color = null, selected = selected == 0) { onSelect(0) }
+        accentPresets.forEach { color ->
+            AccentSwatch(color = color, selected = selected == color.toArgb()) { onSelect(color.toArgb()) }
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.accent_hint), style = MaterialTheme.typography.bodySmall)
+}
+
+@Composable
+private fun AccentSwatch(color: Color?, selected: Boolean, onClick: () -> Unit) {
+    val fill = color ?: MaterialTheme.colorScheme.surfaceVariant
+    val tick = if (fill.luminance() > 0.5f) Color.Black else Color.White
+    val borderColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(fill)
+            .border(if (selected) 3.dp else 1.dp, borderColor, CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        if (selected) {
+            Icon(Icons.Filled.Check, contentDescription = null, tint = tick)
+        } else if (color == null) {
+            Text("A", style = MaterialTheme.typography.labelLarge)
+        }
     }
 }
 
@@ -204,6 +306,7 @@ private fun LicensesSettings() {
     SettingsCard(title = stringResource(R.string.licenses)) {
         InfoRow("Material3", "Apache 2.0")
         InfoRow("Jetpack Compose", "Apache 2.0")
+        InfoRow("Haze", "Apache 2.0")
     }
 }
 
@@ -219,12 +322,11 @@ private fun PhoneInfoSettings() {
 }
 
 @Composable
-private fun AppPickerSection() {
+private fun AppPickerSection(circleIcons: Boolean) {
     val context = LocalContext.current
-    val pm = context.packageManager
     val prefs = context.getSharedPreferences("bare_prefs", Context.MODE_PRIVATE)
 
-    var installedApps by remember { mutableStateOf<List<AppInfo>>(emptyList()) }
+    var installedApps by remember { mutableStateOf<List<AppEntry>>(emptyList()) }
     var selected by remember { mutableStateOf(setOf<String>()) }
     var loading by remember { mutableStateOf(true) }
 
@@ -236,7 +338,7 @@ private fun AppPickerSection() {
             ?: emptyList()
         selected = existing.toSet()
 
-        installedApps = loadLaunchableApps(pm)
+        installedApps = loadLaunchableApps(context)
         loading = false
     }
 
@@ -248,36 +350,30 @@ private fun AppPickerSection() {
                 Text(stringResource(R.string.tap_toggle_pin), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
-                    items(installedApps) { app ->
+                // Fixed height: a LazyColumn inside a scrolling page needs bounded size
+                LazyColumn(modifier = Modifier.height(360.dp)) {
+                    items(installedApps, key = { it.packageName }) { app ->
                         val isSelected = selected.contains(app.packageName)
+                        val toggle = { checked: Boolean ->
+                            selected = if (checked) selected + app.packageName else selected - app.packageName
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clickable { toggle(!isSelected) }
                                 .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                val bmp = app.icon?.let { drawableToBitmap(it) }
-                                if (bmp != null) {
-                                    Image(
-                                        bitmap = bmp.asImageBitmap(),
-                                        contentDescription = app.label,
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                } else {
-                                    Surface(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
-                                        Text(" ", modifier = Modifier.size(40.dp))
-                                    }
-                                }
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AppIcon(app = app, circle = circleIcons, size = 40.dp)
                                 Spacer(modifier = Modifier.padding(8.dp))
                                 Text(app.label, style = MaterialTheme.typography.bodyLarge)
                             }
-
-                            Checkbox(checked = isSelected, onCheckedChange = { checked ->
-                                selected = if (checked) selected + app.packageName else selected - app.packageName
-                            })
+                            Checkbox(checked = isSelected, onCheckedChange = toggle)
                         }
                     }
                 }
@@ -286,50 +382,13 @@ private fun AppPickerSection() {
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                     Button(onClick = {
-                        val csv = selected.joinToString(",")
-                        prefs.edit().putString("pinned_apps", csv).apply()
+                        prefs.edit().putString("pinned_apps", selected.joinToString(",")).apply()
+                        Toast.makeText(context, R.string.pins_saved, Toast.LENGTH_SHORT).show()
                     }) {
                         Text(stringResource(R.string.save_pinned_apps))
                     }
                 }
             }
         }
-    }
-}
-
-private data class AppInfo(val packageName: String, val label: String, val icon: Drawable?)
-
-private suspend fun loadLaunchableApps(pm: PackageManager): List<AppInfo> {
-    return withContext(Dispatchers.IO) {
-        try {
-            val intent = android.content.Intent(android.content.Intent.ACTION_MAIN).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) }
-            val list = pm.queryIntentActivities(intent, 0)
-            val apps = list.map { ri ->
-                val info = ri.activityInfo
-                AppInfo(info.packageName, info.loadLabel(pm).toString(), info.loadIcon(pm))
-            }.sortedBy { it.label.lowercase() }
-            apps
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-}
-
-private fun drawableToBitmap(drawable: Drawable): Bitmap? {
-    try {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let { return it }
-        }
-
-        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 72
-        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 72
-
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    } catch (e: Exception) {
-        return null
     }
 }

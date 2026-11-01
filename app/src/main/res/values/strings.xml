@@ -19,4 +19,10 @@
     <string name="system_info_unavailable">Unavailable</string>
     <string name="save">Save</string>
     <string name="tap_to_toggle">Tap to toggle pin. Press Save when done.</string>
+    <string name="all_apps">All apps</string>
+    <string name="close">Close</string>
+    <string name="accent_colour">Accent colour</string>
+    <string name="accent_hint">"Auto" follows your system colours when Adaptive colors is on.</string>
+    <string name="settings_autosaved">Settings are saved automatically</string>
+    <string name="pins_saved">Pinned apps saved</string>
 </resources>

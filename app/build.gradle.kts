@@ -13,10 +13,10 @@ android {
         targetSdk = 31  // Native target for her phone's Android 12 environment
 
         versionCode = 4
-        versionName = "26.10-alpha1-261005"
+        versionName = "26.10-alpha2-261101"
 
         // Your secret neighborhood easter egg is safe here!
-        buildConfigField("String", "CODENAME", "\"CronkiteAlpha1\"")
+        buildConfigField("String", "CODENAME", "\"CronkiteAlpha2\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -59,4 +59,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Frosted-glass blur for the app drawer
+    implementation("dev.chrisbanes.haze:haze:0.7.3")
 }

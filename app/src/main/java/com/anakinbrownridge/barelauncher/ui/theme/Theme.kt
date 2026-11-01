@@ -2,6 +2,7 @@ package com.anakinbrownridge.barelauncher.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
@@ -11,6 +12,8 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 
@@ -254,27 +257,43 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+/** Re-tints the primary colour family with the user's chosen accent. */
+private fun ColorScheme.withAccent(accent: Color, dark: Boolean): ColorScheme {
+    val onAccent = if (accent.luminance() > 0.5f) Color.Black else Color.White
+    val container = lerp(accent, if (dark) Color.Black else Color.White, 0.65f)
+    val onContainer = if (container.luminance() > 0.5f) Color.Black else Color.White
+    return copy(
+        primary = accent,
+        onPrimary = onAccent,
+        primaryContainer = container,
+        onPrimaryContainer = onContainer,
+        inversePrimary = accent,
+        surfaceTint = accent
+    )
+}
+
 @Composable
 fun BareLauncherTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable() () -> Unit
+    // Optional user-chosen accent; null keeps the base scheme
+    accent: Color? = null,
+    content: @Composable () -> Unit
 ) {
-  val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-          val context = LocalContext.current
-          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
+    val base = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+    val colorScheme = if (accent != null) base.withAccent(accent, darkTheme) else base
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
+    )
 }
-
