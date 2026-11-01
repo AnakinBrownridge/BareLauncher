@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Minimal Material3 DayNight theme without an ActionBar used by the manifest -->
-    <style name="Theme.Material3.DayNight.NoActionBar" parent="Theme.Material3.DayNight">
-        <!-- Remove title / action bar -->
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-
-        <!-- Keep dark/light behavior and basic colors delegated to Material3 defaults -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:navigationBarColor">?attr/colorOnSurface</item>
-
-        <!-- Allow system dark mode -->
+    <style name="Theme.BareLauncher" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:forceDarkAllowed">true</item>
     </style>
 </resources>

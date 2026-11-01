@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -190,7 +192,7 @@ private fun AppearanceSettings() {
 private fun AboutSettings() {
     SettingsCard(title = stringResource(R.string.about)) {
         InfoRow("BareLauncher")
-        InfoRow("Version", "1.0.0")
+        InfoRow("Version", BuildConfig.VERSION_NAME)
         InfoRow("Theme", "Low-resource Material You")
         InfoRow("Note", "Designed for simple daily use.")
     }
@@ -201,26 +203,17 @@ private fun LicensesSettings() {
     SettingsCard(title = stringResource(R.string.licenses)) {
         InfoRow("Material3", "Apache 2.0")
         InfoRow("Jetpack Compose", "Apache 2.0")
-        InfoRow("Haze", "Apache 2.0")
     }
 }
 
 @Composable
 private fun PhoneInfoSettings() {
-    val context = LocalContext.current
-    var sysverText by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        sysverText = readSysverFromResources(context)
-    }
-
     SettingsCard(title = stringResource(R.string.phone_info)) {
-        if (sysverText.isNullOrBlank()) {
-            InfoRow("System info", stringResource(R.string.system_info_unavailable))
-        } else {
-            val lines = sysverText!!.trim().lines()
-            lines.forEach { line -> InfoRow(line) }
-        }
+        InfoRow("Device", "${Build.MANUFACTURER} ${Build.MODEL}")
+        InfoRow("Android", "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
+        InfoRow("Build", Build.DISPLAY)
+        InfoRow("Security patch", Build.VERSION.SECURITY_PATCH)
+        InfoRow("Launcher", "${BuildConfig.VERSION_NAME} (${BuildConfig.CODENAME})")
     }
 }
 
@@ -254,7 +247,7 @@ private fun AppPickerSection() {
                 Text(stringResource(R.string.tap_toggle_pin), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                LazyColumn {
+                LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
                     items(installedApps) { app ->
                         val isSelected = selected.contains(app.packageName)
                         Row(
@@ -337,20 +330,5 @@ private fun drawableToBitmap(drawable: Drawable): Bitmap? {
         return bitmap
     } catch (e: Exception) {
         return null
-    }
-}
-
-private suspend fun readSysverFromResources(context: Context): String? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val rawId = context.resources.getIdentifier("sysver", "raw", context.packageName)
-            if (rawId != 0) {
-                context.resources.openRawResource(rawId).bufferedReader().use { it.readText() }
-            } else {
-                try {
-                    context.assets.open("sysver.sh").bufferedReader().use { it.readText() }
-                } catch (e: Exception) { null }
-            }
-        } catch (e: Exception) { null }
     }
 }

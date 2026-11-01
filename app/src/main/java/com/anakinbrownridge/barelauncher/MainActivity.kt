@@ -2,7 +2,6 @@ package com.anakinbrownridge.barelauncher
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -26,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,24 +64,32 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+    // Bumped on every resume so pinned apps reload after returning from Settings
+    private var refreshTick by mutableIntStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BareLauncherTheme {
-                BareLauncherHomeScreen()
+                BareLauncherHomeScreen(refreshKey = refreshTick)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshTick++
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BareLauncherHomeScreen() {
+fun BareLauncherHomeScreen(refreshKey: Int = 0) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bare_prefs", Context.MODE_PRIVATE)
     var pinnedPackages by remember { mutableStateOf(listOf<String>()) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshKey) {
         pinnedPackages = prefs.getString("pinned_apps", "")
             ?.split(',')
             ?.map { it.trim() }
@@ -161,7 +170,7 @@ private fun PinnedAppsGrid(pinnedPackages: List<String>, onLaunch: (String) -> U
 
     val gridState = rememberLazyGridState()
 
-    androidx.compose.foundation.lazy.grid.LazyHorizontalGrid(
+    LazyHorizontalGrid(
         rows = GridCells.Fixed(1),
         state = gridState,
         modifier = Modifier.height(92.dp)
