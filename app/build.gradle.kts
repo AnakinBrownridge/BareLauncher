@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.anakinbrownridge.barelauncher"
-        minSdk = 29     
+        minSdk = 29
         targetSdk = 31  // Native target for her phone's Android 12 environment
 
         versionCode = 4
@@ -23,6 +23,17 @@ android {
             useSupportLibrary = true
         }
     } // <-- Closes defaultConfig
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -39,7 +50,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" 
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 } // <-- This exact bracket MUST be here to close the android block completely!
 
